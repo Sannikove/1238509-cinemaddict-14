@@ -4,9 +4,13 @@ import {createFilmsContainerTemplate} from './view/films-container.js';
 import {createFilmCardTemplate} from './view/film-card.js';
 import {createLoadMoreButtonTemplate} from './view/load-more-button.js';
 import {createPopupTemplate} from './view/popup.js';
+import {generateFilmCard} from './mock/film-card.js';
+
 
 const FILM_COUNT = 5;
 const TOP_FILM_COUNT = 2;
+
+const cards = new Array(FILM_COUNT).fill().map(generateFilmCard);
 
 const render = (container, template, place = 'beforeend') => {
   container.insertAdjacentHTML(place, template);
@@ -24,21 +28,21 @@ const filmsListElement = filmsElement.querySelectorAll('.films-list');
 
 const filmCardContainerElement = filmsListElement[0].querySelector('.films-list__container');
 for (let i = 0; i < FILM_COUNT; i++) {
-  render(filmCardContainerElement, createFilmCardTemplate());
+  render(filmCardContainerElement, createFilmCardTemplate(cards[i]));
 }
 render(filmsListElement[0], createLoadMoreButtonTemplate());
 
-const topRatedFilmsContainerElement = filmsListElement[1].querySelector('.films-list__container');
-for (let i = 0; i < TOP_FILM_COUNT; i++) {
-  render(topRatedFilmsContainerElement, createFilmCardTemplate());
-}
+// const topRatedFilmsContainerElement = filmsListElement[1].querySelector('.films-list__container');
+// for (let i = 0; i < TOP_FILM_COUNT; i++) {
+//   render(topRatedFilmsContainerElement, createFilmCardTemplate(cards[i]));
+// }
 
-const mostCommentFilmsContainerElement = filmsListElement[2].querySelector('.films-list__container');
-for (let i = 0; i < TOP_FILM_COUNT; i++) {
-  render(mostCommentFilmsContainerElement, createFilmCardTemplate());
-}
+// const mostCommentFilmsContainerElement = filmsListElement[2].querySelector('.films-list__container');
+// for (let i = 0; i < TOP_FILM_COUNT; i++) {
+//   render(mostCommentFilmsContainerElement, createFilmCardTemplate(cards[i]));
+//}
 
-const siteFooterElement = document.querySelector('.footer');
-render(siteFooterElement, createPopupTemplate(), 'afterend');
+// const siteFooterElement = document.querySelector('.footer');
+// render(siteFooterElement, createPopupTemplate(cards[1]), 'afterend');
 
 
