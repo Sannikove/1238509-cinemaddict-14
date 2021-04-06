@@ -9,11 +9,9 @@ export const createFilmCardTemplate = (card) => {
     duration,
     genre,
     description,
+    comments,
     userFilmInteractions,
   } = card;
-
-  // для попапа
-  // const release = dayjs(releaseDate).format('D MMMM YYYY');
 
   const runtime = duration >= 60 ?
     Math.floor(duration / 60) + 'h' + duration % 60 + 'm' :
@@ -31,6 +29,7 @@ export const createFilmCardTemplate = (card) => {
   const favoriteClassName = interactions[2] ?
     'film-card__controls-item--active' :
     '';
+  const commentCount = comments.length;
 
   return `<article class="film-card">
   <h3 class="film-card__title">${title}</h3>
@@ -42,7 +41,7 @@ export const createFilmCardTemplate = (card) => {
   </p>
   <img src="${poster}" alt="" class="film-card__poster">
   <p class="film-card__description">${description}</p>
-  <a class="film-card__comments">5 comments</a>
+  <a class="film-card__comments">${commentCount} comments</a>
   <div class="film-card__controls">
     <button class="film-card__controls-item button film-card__controls-item--add-to-watchlist ${watchlistClassName}" type="button">Add to watchlist</button>
     <button class="film-card__controls-item button film-card__controls-item--mark-as-watched ${watchedClassName}" type="button">Mark as watched</button>

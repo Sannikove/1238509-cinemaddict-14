@@ -86,18 +86,21 @@ const getRandomArrayElement = (array) => {
   const randomIndex = getRandomInteger(0, array.length - 1);
   return array[randomIndex];
 };
-const randomArrayCount = getRandomInteger(1, 5);
 
-const generateNames = () => {
+
+const generateRandomArray = (arr) => {
+  const randomArrayCount = getRandomInteger(1, 3);
   return new Array(randomArrayCount).fill().map(() =>
-    getRandomArrayElement(NAMES)).join(', ');
+    getRandomArrayElement(arr));
 };
 
 const generateRating = () => {
   return getRandomInteger(0, 9) + '.' + getRandomInteger(0, 9);
 };
 
+
 const generateDescription = () => {
+  const randomArrayCount = getRandomInteger(1, 5);
   return new Array(randomArrayCount).fill().map(() =>
     getRandomArrayElement(DESCRIPTIONS)).join(' ');
 };
@@ -116,14 +119,15 @@ export const generateFilmCard = () => {
     title: getRandomArrayElement(FILMS),
     originalTitle: getRandomArrayElement(FILMS),
     director: getRandomArrayElement(NAMES),
-    writers: generateNames(),// попап
-    actors: generateNames(),//попап
-    rating: generateRating(),//попап
+    writers: generateRandomArray(NAMES),
+    actors: generateRandomArray(NAMES),
+    rating: generateRating(),
     releaseDate: generateDate(),
     country :getRandomArrayElement(COUNTRY),
     duration: getRandomInteger(1, 180),
-    genre: getRandomArrayElement(GENRE),
+    genre: generateRandomArray(GENRE),
     description: generateDescription(),
+    comments: new Array(getRandomInteger(1, 5)).fill().map(generateComment),
     userFilmInteractions: {
       isWatchlist: Boolean(getRandomInteger(0, 1)),
       isWatched: Boolean(getRandomInteger(0, 1)),
@@ -132,13 +136,12 @@ export const generateFilmCard = () => {
   };
 };
 
-export const generateCommentsList = () => {
+export const generateComment = () => {
   return {
+    id: getRandomInteger(1, 10),
     nickName: getRandomArrayElement(NAMES),
     commentDate: generateDate(),
     comment: generateDescription(),
     emotion: getRandomArrayElement(EMOTION),
-  }
+  };
 };
-
-console.log(generateFilmCard());

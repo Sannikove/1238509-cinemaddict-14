@@ -5,10 +5,9 @@ import {createFilmCardTemplate} from './view/film-card.js';
 import {createLoadMoreButtonTemplate} from './view/load-more-button.js';
 import {createPopupTemplate} from './view/popup.js';
 import {generateFilmCard} from './mock/film-card.js';
-
+import {createCommentTemplate} from './view/comment.js';
 
 const FILM_COUNT = 5;
-const TOP_FILM_COUNT = 2;
 
 const cards = new Array(FILM_COUNT).fill().map(generateFilmCard);
 
@@ -32,17 +31,7 @@ for (let i = 0; i < FILM_COUNT; i++) {
 }
 render(filmsListElement[0], createLoadMoreButtonTemplate());
 
-// const topRatedFilmsContainerElement = filmsListElement[1].querySelector('.films-list__container');
-// for (let i = 0; i < TOP_FILM_COUNT; i++) {
-//   render(topRatedFilmsContainerElement, createFilmCardTemplate(cards[i]));
-// }
-
-// const mostCommentFilmsContainerElement = filmsListElement[2].querySelector('.films-list__container');
-// for (let i = 0; i < TOP_FILM_COUNT; i++) {
-//   render(mostCommentFilmsContainerElement, createFilmCardTemplate(cards[i]));
-//}
-
-// const siteFooterElement = document.querySelector('.footer');
-// render(siteFooterElement, createPopupTemplate(cards[1]), 'afterend');
-
-
+const siteFooterElement = document.querySelector('.footer');
+render(siteFooterElement, createPopupTemplate(cards[1]), 'afterend');
+const commentsContainer = document.querySelector('.film-details__comments-list');
+render(commentsContainer, createCommentTemplate());
