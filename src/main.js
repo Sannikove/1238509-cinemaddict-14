@@ -23,15 +23,19 @@ render(siteMainElement, createSiteMenuTemplate());
 render(siteMainElement, createFilmsContainerTemplate());
 
 const filmsElement = document.querySelector('.films');
-const filmsListElement = filmsElement.querySelectorAll('.films-list');
+const filmsListElement = filmsElement.querySelector('.films-list');
 
-const filmCardContainerElement = filmsListElement[0].querySelector('.films-list__container');
-for (let i = 0; i < FILM_COUNT; i++) {
+const filmCardContainerElement = filmsListElement.querySelector('.films-list__container');
+for (let i = 0; i < 5; i++) {
   render(filmCardContainerElement, createFilmCardTemplate(cards[i]));
 }
-render(filmsListElement[0], createLoadMoreButtonTemplate());
+render(filmsListElement, createLoadMoreButtonTemplate());
 
 const siteFooterElement = document.querySelector('.footer');
 render(siteFooterElement, createPopupTemplate(cards[1]), 'afterend');
+
 const commentsContainer = document.querySelector('.film-details__comments-list');
-render(commentsContainer, createCommentTemplate());
+for (let i = 0; i < cards[1].comments.length; i++) {
+  render(commentsContainer, createCommentTemplate(cards[1].comments[i]));
+}
+
