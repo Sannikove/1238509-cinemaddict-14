@@ -20,15 +20,19 @@ export const createFilmCardTemplate = (card) => {
   const release = dayjs(releaseDate).format('YYYY');
   const interactions = Object.values(userFilmInteractions);
 
-  const watchlistClassName = interactions[0] ?
-    'film-card__controls-item--active' :
-    '';
-  const watchedClassName = interactions[1] ?
-    'film-card__controls-item--active' :
-    '';
-  const favoriteClassName = interactions[2] ?
-    'film-card__controls-item--active' :
-    '';
+  const getClassName = (value) => {
+    switch (value) {
+      case true:
+        return 'film-card__controls-item--active';
+      case false:
+        return '';
+    }
+  };
+
+  const watchlistClassName = getClassName(interactions[0]);
+  const watchedClassName = getClassName(interactions[1]);
+  const favoriteClassName = getClassName(interactions[2]);
+
   const commentCount = comments.length;
 
   const genreCount = genre[0];

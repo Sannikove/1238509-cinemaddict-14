@@ -6,8 +6,9 @@ import {createLoadMoreButtonTemplate} from './view/load-more-button.js';
 import {createPopupTemplate} from './view/popup.js';
 import {generateFilmCard} from './mock/film-card.js';
 import {createCommentTemplate} from './view/comment.js';
+import {createStatisticsTemplate} from './view/footer-statistics.js';
 
-const FILM_COUNT = 5;
+const FILM_COUNT = 20;
 
 const cards = new Array(FILM_COUNT).fill().map(generateFilmCard);
 
@@ -18,7 +19,7 @@ const render = (container, template, place = 'beforeend') => {
 const siteHeaderElement = document.querySelector('.header');
 const siteMainElement = document.querySelector('.main');
 
-render(siteHeaderElement, createRankTemplate());
+render(siteHeaderElement, createRankTemplate(cards));
 render(siteMainElement, createSiteMenuTemplate());
 render(siteMainElement, createFilmsContainerTemplate());
 
@@ -32,6 +33,8 @@ for (let i = 0; i < 5; i++) {
 render(filmsListElement, createLoadMoreButtonTemplate());
 
 const siteFooterElement = document.querySelector('.footer');
+const footerStatisticsContainerElement = siteFooterElement.querySelector('.footer__statistics');
+render (footerStatisticsContainerElement, createStatisticsTemplate(cards));
 render(siteFooterElement, createPopupTemplate(cards[1]), 'afterend');
 
 const commentsContainer = document.querySelector('.film-details__comments-list');

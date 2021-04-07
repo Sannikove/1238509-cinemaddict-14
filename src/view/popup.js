@@ -20,14 +20,16 @@ export const createPopupTemplate = (card) => {
   } = card;
 
   const release = dayjs(releaseDate).format('D MMMM YYYY');
+
+  //util
   const runtime = duration >= 60 ?
     Math.floor(duration / 60) + 'h' + duration % 60 + 'm' :
     duration + 'm';
 
   let genreCount = '';
   genre.length > 1 ?
-    genreCount = 'Genres'
-    : genreCount = 'Genre';
+    genreCount = 'Genres' :
+    genreCount = 'Genre';
 
   let genresList = '';
   for (let i = 0; i < genre.length; i++) {
@@ -39,18 +41,20 @@ export const createPopupTemplate = (card) => {
 
   const interactions = Object.values(userFilmInteractions);
 
-  const watchlistChecked = interactions[0] ?
-    'checked' :
-    '';
-  const watchedChecked = interactions[1] ?
-    'checked' :
-    '';
-  const favoriteChecked = interactions[2] ?
-    'checked' :
-    '';
+  const getChecked = (value) => {
+    switch (value) {
+      case true:
+        return 'checked';
+      case false:
+        return '';
+    }
+  };
+
+  const watchlistChecked = getChecked(interactions[0]);
+  const watchedChecked = getChecked(interactions[1]);
+  const favoriteChecked = getChecked(interactions[2]);
 
   const commentsCount = comments.length;
-
 
   return `<section class="film-details">
     <form class="film-details__inner" action="" method="get">
