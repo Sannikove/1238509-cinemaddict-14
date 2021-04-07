@@ -16,4 +16,12 @@ const generateRandomArray = (arr) => {
     getRandomArrayElement(arr));
 };
 
-export {getRandomInteger, getRandomArrayElement, generateRandomArray};
+const convertHours = (minutes) => {
+  if(minutes >= 60) {
+    return Math.floor(minutes / 60) + 'h' + minutes % 60 + 'm';
+  } else {
+    return minutes + 'm';
+  }
+};
+
+export {getRandomInteger, getRandomArrayElement, generateRandomArray, convertHours};

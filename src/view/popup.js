@@ -1,4 +1,5 @@
 import dayjs from 'dayjs';
+import {convertHours} from '../utils.js';
 
 export const createPopupTemplate = (card) => {
   const {
@@ -21,10 +22,7 @@ export const createPopupTemplate = (card) => {
 
   const release = dayjs(releaseDate).format('D MMMM YYYY');
 
-  //util
-  const runtime = duration >= 60 ?
-    Math.floor(duration / 60) + 'h' + duration % 60 + 'm' :
-    duration + 'm';
+  const runtime = convertHours(duration);
 
   let genreCount = '';
   genre.length > 1 ?

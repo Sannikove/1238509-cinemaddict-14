@@ -1,10 +1,5 @@
-export const createRankTemplate = (cards) => {
-  let watchedFilms = 0;
-  for (const card of cards) {
-    if (card.userFilmInteractions.isWatched) {
-      watchedFilms++;
-    }
-  }
+export const createRankTemplate = (filters) => {
+  const watchedFilms = filters[2].count;
 
   const getRank = (count) => {
     if (count === 0) {

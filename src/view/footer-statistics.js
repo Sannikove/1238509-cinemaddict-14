@@ -1,5 +1,5 @@
-export const createStatisticsTemplate = (cards) => {
-  const allFilmsCount = cards.length;
+export const createStatisticsTemplate = (filters) => {
+  const allFilmsCount = filters[0].count;
   return `<p>${allFilmsCount} movies inside
           </p>`;
 };

@@ -1,4 +1,5 @@
 import dayjs from 'dayjs';
+import {convertHours} from '../utils.js';
 
 export const createFilmCardTemplate = (card) => {
   const {
@@ -13,11 +14,10 @@ export const createFilmCardTemplate = (card) => {
     userFilmInteractions,
   } = card;
 
-  const runtime = duration >= 60 ?
-    Math.floor(duration / 60) + 'h' + duration % 60 + 'm' :
-    duration + 'm';
+  const runtime = convertHours(duration);
 
   const release = dayjs(releaseDate).format('YYYY');
+
   const interactions = Object.values(userFilmInteractions);
 
   const getClassName = (value) => {
