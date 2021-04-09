@@ -1,7 +1,7 @@
 import dayjs from 'dayjs';
-import {POSTERS, FILMS, NAMES, DESCRIPTIONS, GENRES, COUNTRYS} from '../const.js';
+import {POSTERS, FILMS, NAMES, DESCRIPTIONS, GENRES, COUNTRIES} from '../const.js';
 import {getRandomInteger, getRandomArrayElement, generateRandomArray} from '../utils.js';
-import {generateComment} from './comment-mock.js';
+import {commentsArray} from '../main.js';
 
 const generatePoster = () => {
   const poster = getRandomArrayElement(POSTERS);
@@ -25,6 +25,14 @@ export const generateDate = () => {
   return dayjs().add(yearsGap, 'y').add(daysGap, 'd').toDate();
 };
 
+const generateIdArray = () => {
+  const arr = [];
+  for (let i = 0; i < getRandomInteger(0, 5); i++) {
+    arr.push(commentsArray[i].id);
+  }
+  return arr;
+};
+
 export const generateFilmCard = () => {
   return {
     poster: generatePoster(),
@@ -36,11 +44,11 @@ export const generateFilmCard = () => {
     actors: generateRandomArray(NAMES),
     rating: generateRating(),
     releaseDate: generateDate(),
-    country :getRandomArrayElement(COUNTRYS),
+    country :getRandomArrayElement(COUNTRIES),
     duration: getRandomInteger(1, 180),
     genre: generateRandomArray(GENRES),
     description: generateDescription(),
-    comments: new Array(getRandomInteger(0, 5)).fill().map(generateComment),
+    comments: generateIdArray(),
     userFilmInteractions: {
       isWatchlist: Boolean(getRandomInteger(0, 1)),
       isWatched: Boolean(getRandomInteger(0, 1)),

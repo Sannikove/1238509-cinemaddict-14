@@ -1,3 +1,5 @@
+const MINUTES_IN_HOUR = 60;
+
 const getRandomInteger = (a = 0, b = 1) => {
   const lower = Math.ceil(Math.min(a, b));
   const upper = Math.floor(Math.max(a, b));
@@ -17,11 +19,10 @@ const generateRandomArray = (arr) => {
 };
 
 const convertHours = (minutes) => {
-  if(minutes >= 60) {
-    return Math.floor(minutes / 60) + 'h' + minutes % 60 + 'm';
-  } else {
-    return minutes + 'm';
+  if (minutes >= MINUTES_IN_HOUR) {
+    return Math.floor(minutes / MINUTES_IN_HOUR) + 'h' + minutes % MINUTES_IN_HOUR + 'm';
   }
+  return minutes + 'm';
 };
 
 export {getRandomInteger, getRandomArrayElement, generateRandomArray, convertHours};

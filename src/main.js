@@ -4,16 +4,20 @@ import {createFilmsContainerTemplate} from './view/films-container.js';
 import {createFilmCardTemplate} from './view/film-card.js';
 import {createLoadMoreButtonTemplate} from './view/load-more-button.js';
 import {createPopupTemplate} from './view/popup.js';
-import {generateFilmCard} from './mock/film-card.js';
+import {generateFilmCard} from './mock/film.js';
 import {createCommentTemplate} from './view/comment.js';
 import {createStatisticsTemplate} from './view/footer-statistics.js';
 import {generateFilter} from './mock/filter.js';
+import {generateComment} from './mock/comment-mock.js';
 
+const COMMENT_COUNT = 20;
 const FILM_COUNT = 25;
 const FILM_COUNT_PER_STEP = 5;
 
+const commentsArray = new Array(COMMENT_COUNT).fill().map(generateComment);
 const cards = new Array(FILM_COUNT).fill().map(generateFilmCard);
 const filters = generateFilter(cards);
+
 
 const render = (container, template, place = 'beforeend') => {
   container.insertAdjacentHTML(place, template);
@@ -56,9 +60,15 @@ if (cards.length > FILM_COUNT_PER_STEP) {
 const siteFooterElement = document.querySelector('.footer');
 const footerStatisticsContainerElement = siteFooterElement.querySelector('.footer__statistics');
 render(footerStatisticsContainerElement, createStatisticsTemplate(filters));
-render(siteFooterElement, createPopupTemplate(cards[1]), 'afterend');
+render(siteFooterElement, createPopupTemplate(cards[0]), 'afterend');
 
 const commentsContainer = document.querySelector('.film-details__comments-list');
-for (let i = 0; i < cards[1].comments.length; i++) {
-  render(commentsContainer, createCommentTemplate(cards[1].comments[i]));
+for (let i = 0; i < cards[0].comments.length; i++) {
+  for (let j  = 0; j < commentsArray.length; j++) {
+    if (cards[0].comments[i] == commentsArray[j].id) {
+      render(commentsContainer, createCommentTemplate(commentsArray[j]));
+    }
+  }
 }
+
+export {commentsArray};

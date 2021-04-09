@@ -60,12 +60,12 @@ const GENRES = [
   'Adventure',
 ];
 
-const COUNTRYS = [
+const COUNTRIES = [
   'USA',
   'Russia',
   'France',
 ];
 
-const EMOTIONS = ['smile', 'sleeping', 'puke', 'angry'];
+const EMOJIES = ['smile', 'sleeping', 'puke', 'angry'];
 
-export {POSTERS, FILMS, NAMES, DESCRIPTIONS, GENRES, COUNTRYS, EMOTIONS};
+export {POSTERS, FILMS, NAMES, DESCRIPTIONS, GENRES, COUNTRIES, EMOJIES};
