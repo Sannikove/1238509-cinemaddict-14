@@ -1,7 +1,7 @@
 import dayjs from 'dayjs';
-import {convertHours} from '../utils.js';
+import {convertHours, createElement} from '../utils.js';
 
-export const createFilmCardTemplate = (card) => {
+const createFilmCardTemplate = (card) => {
   const {
     poster,
     title,
@@ -55,3 +55,26 @@ export const createFilmCardTemplate = (card) => {
     </div>
   </article>`;
 };
+
+export default class FilmCard {
+  constructor(card) {
+    this._element = null;
+    this._card = card;
+  }
+
+  getTemplate() {
+    return createFilmCardTemplate(this._card);
+  }
+
+  getElement() {
+    if (!this._element) {
+      this._element = createElement(this.getTemplate());
+    }
+
+    return this._element;
+  }
+
+  removeElement() {
+    this._element = null;
+  }
+}

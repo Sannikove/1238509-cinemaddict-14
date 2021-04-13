@@ -1,3 +1,5 @@
+import {createElement} from '../utils.js';
+
 const getRank = (count) => {
   if (count === 0) {
     return '';
@@ -9,7 +11,7 @@ const getRank = (count) => {
   return 'Movie Buff';
 };
 
-export const createRankTemplate = (filters) => {
+const createRankTemplate = (filters) => {
   const watchedFilms = filters[2].count;
 
   const rank = getRank(watchedFilms);
@@ -19,3 +21,26 @@ export const createRankTemplate = (filters) => {
     <img class="profile__avatar" src="images/bitmap@2x.png" alt="Avatar" width="35" height="35">
   </section>`;
 };
+
+export default class Rank {
+  constructor(filters) {
+    this._element = null;
+    this._filters = filters;
+  }
+
+  getTemplate() {
+    return createRankTemplate(this._filters);
+  }
+
+  getElement() {
+    if (!this._element) {
+      this._element = createElement(this.getTemplate());
+    }
+
+    return this._element;
+  }
+
+  removeElement() {
+    this._element = null;
+  }
+}
