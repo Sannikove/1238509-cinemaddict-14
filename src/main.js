@@ -12,7 +12,7 @@ import CommentView from './view/comment.js';
 import FooterStatisticView from './view/footer-statistics.js';
 import {generateFilter} from './mock/filter.js';
 import {generateComment} from './mock/comment-mock.js';
-import {render, RenderPosition} from './utils.js';
+import {render, RenderPosition, remove} from './utils/render.js';
 
 const COMMENT_COUNT = 20;
 const FILM_COUNT = 25;
@@ -25,17 +25,17 @@ const filters = generateFilter(cards);
 const siteHeaderElement = document.querySelector('.header');
 const siteMainElement = document.querySelector('.main');
 
-render(siteHeaderElement, new RankView(filters).getElement(), RenderPosition.BEFOREEND);
-render(siteMainElement, new NavigationView(filters).getElement(), RenderPosition.BEFOREEND);
-render(siteMainElement, new SortView().getElement(), RenderPosition.BEFOREEND);
+render(siteHeaderElement, new RankView(filters), RenderPosition.BEFOREEND);
+render(siteMainElement, new NavigationView(filters), RenderPosition.BEFOREEND);
+render(siteMainElement, new SortView(), RenderPosition.BEFOREEND);
 
-const FilmsContainerComponent = new FilmsContainerView().getElement();
+const FilmsContainerComponent = new FilmsContainerView();
 render(siteMainElement, FilmsContainerComponent, RenderPosition.BEFOREEND);
 
-const FilmsListComponent = new FilmsListView().getElement();
+const FilmsListComponent = new FilmsListView();
 render(FilmsContainerComponent, FilmsListComponent, RenderPosition.BEFOREEND);
 
-const CardsContainerComponent = new CardsContainerView().getElement();
+const CardsContainerComponent = new CardsContainerView();
 render(FilmsListComponent, CardsContainerComponent, RenderPosition.BEFOREEND);
 
 const renderComments = (card, popup) => {
@@ -43,52 +43,46 @@ const renderComments = (card, popup) => {
   for (let i = 0; i < card.comments.length; i++) {
     for (let j = 0; j < commentsArray.length; j++) {
       if (card.comments[i] == commentsArray[j].id) {
-        render(container, new CommentView(commentsArray[j]).getElement(), RenderPosition.BEFOREEND);
+        render(container, new CommentView(commentsArray[j]), RenderPosition.BEFOREEND);
       }
     }
   }
 };
 
 const renderPopup = (CardComponent, card) => {
-  const poster = CardComponent.querySelector('.film-card__poster');
-  const title = CardComponent.querySelector('.film-card__title');
-  const commentsCount = CardComponent.querySelector('.film-card__comments');
-  const PopupComponent = new PopupView(card).getElement();
-  const closePopupBtn = PopupComponent.querySelector('.film-details__close-btn');
-  renderComments(card, PopupComponent);
+  const PopupComponent = new PopupView(card);
+  renderComments(card, PopupComponent.getElement());
 
   const openPopup = () => {
-    document.body.appendChild(PopupComponent);
+    document.body.appendChild(PopupComponent.getElement());
     document.body.classList.add('hide-overflow');
   };
   const closePopup = () => {
-    document.body.removeChild(PopupComponent);
+    document.body.removeChild(PopupComponent.getElement());
     document.body.classList.remove('hide-overflow');
   };
-  poster.addEventListener('click', () => openPopup());
-  title.addEventListener('click', () => openPopup());
-  commentsCount.addEventListener('click', () => openPopup());
-  closePopupBtn.addEventListener('click', () => closePopup());
+
+  CardComponent.setOpenPopupClickHandler(() => openPopup());
+  PopupComponent.setCloseBtnClickHandler(() => closePopup());
 };
 
 for (let i = 0; i < Math.min(cards.length, FILM_COUNT_PER_STEP); i++) {
-  const FilmCardComponent = new FilmCardView(cards[i]).getElement();
+  const FilmCardComponent = new FilmCardView(cards[i]);
   render(CardsContainerComponent, FilmCardComponent, RenderPosition.BEFOREEND);
   renderPopup(FilmCardComponent, cards[i]);
 }
 
 if (cards.length > FILM_COUNT_PER_STEP) {
   let renderedCardCount = FILM_COUNT_PER_STEP;
-  const ShowMoreButtonComponent = new ShowMoreButton().getElement();
+  const ShowMoreButtonComponent = new ShowMoreButton();
   render(FilmsListComponent, ShowMoreButtonComponent, RenderPosition.BEFOREEND);
 
 
-  ShowMoreButtonComponent.addEventListener('click', (evt) => {
-    evt.preventDefault();
+  ShowMoreButtonComponent.setClickHandler(() => {
     cards
       .slice(renderedCardCount, renderedCardCount + FILM_COUNT_PER_STEP)
       .forEach((card) => {
-        const FilmCardComponent = new FilmCardView(card).getElement();
+        const FilmCardComponent = new FilmCardView(card);
         render(CardsContainerComponent, FilmCardComponent, RenderPosition.BEFOREEND);
         renderPopup(FilmCardComponent, card);
       });
@@ -96,13 +90,13 @@ if (cards.length > FILM_COUNT_PER_STEP) {
     renderedCardCount += FILM_COUNT_PER_STEP;
 
     if (renderedCardCount >= cards.length) {
-      ShowMoreButtonComponent.remove();
+      remove(ShowMoreButtonComponent);
     }
   });
 }
 
 const siteFooterElement = document.querySelector('.footer');
 const footerStatisticsContainerElement = siteFooterElement.querySelector('.footer__statistics');
-render(footerStatisticsContainerElement, new FooterStatisticView(filters).getElement(), RenderPosition.BEFOREEND);
+render(footerStatisticsContainerElement, new FooterStatisticView(filters), RenderPosition.BEFOREEND);
 
 export {commentsArray};
