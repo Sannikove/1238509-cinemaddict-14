@@ -1,5 +1,6 @@
 import dayjs from 'dayjs';
-import {convertHours, createElement} from '../utils.js';
+import {convertHours} from '../utils/time.js';
+import AbstractView from './abstract.js';
 
 const createPopupTemplate = (card) => {
   const {
@@ -151,25 +152,25 @@ const createPopupTemplate = (card) => {
   </section>`;
 };
 
-export default class Popup {
+export default class Popup extends AbstractView{
   constructor(card) {
-    this._element = null;
+    super();
     this._card = card;
+
+    this._closeBtnClickHandler = this._closeBtnClickHandler.bind(this);
   }
 
   getTemplate() {
     return createPopupTemplate(this._card);
   }
 
-  getElement() {
-    if (!this._element) {
-      this._element = createElement(this.getTemplate());
-    }
-
-    return this._element;
+  _closeBtnClickHandler(evt) {
+    evt.preventDefault();
+    this._callback.closeBtnClick();
   }
 
-  removeElement() {
-    this._element = null;
+  setCloseBtnClickHandler(callback) {
+    this._callback.closeBtnClick = callback;
+    this.getElement().querySelector('.film-details__close-btn').addEventListener('click', this._closeBtnClickHandler);
   }
 }

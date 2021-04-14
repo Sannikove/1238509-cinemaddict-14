@@ -1,5 +1,5 @@
 import nanoid from 'nanoid';
-import {getRandomArrayElement} from '../utils';
+import {getRandomArrayElement} from '../utils/common.js';
 import {NAMES, EMOJIES} from '../const.js';
 import {generateDate, generateDescription} from './film';
 

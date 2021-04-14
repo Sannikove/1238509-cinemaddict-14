@@ -1,6 +1,6 @@
 import dayjs from 'dayjs';
 import {POSTERS, FILMS, NAMES, DESCRIPTIONS, GENRES, COUNTRIES} from '../const.js';
-import {getRandomInteger, getRandomArrayElement, generateRandomArray} from '../utils.js';
+import {getRandomInteger, getRandomArrayElement, generateRandomArray} from '../utils/common.js';
 import {commentsArray} from '../main.js';
 
 const generatePoster = () => {
