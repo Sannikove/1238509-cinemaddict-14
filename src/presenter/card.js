@@ -1,7 +1,7 @@
 import FilmCardView from '../view/film-card.js';
 import PopupView from '../view/popup.js';
 import CommentView from '../view/comment.js';
-import {render, RenderPosition} from '../utils/render.js';
+import {render, RenderPosition, remove, replace} from '../utils/render.js';
 
 export default class Card {
   constructor(cardsContainer) {
@@ -17,13 +17,28 @@ export default class Card {
     this._card = card;
     this._commentsArray = commentsArray;
 
+    const prevFilmCardComponent = this._filmCardComponent;
+
     this._filmCardComponent = new FilmCardView(card);
     this._popupComponent = new PopupView(card);
 
     this._filmCardComponent.setOpenPopupClickHandler(this._handleOpenPopupClick);
     this._popupComponent.setCloseBtnClickHandler(this._handleCloseBtnClick);
 
-    this._renderCard();
+    if (prevFilmCardComponent === null) {
+      this._renderCard();
+      return;
+    }
+
+    if (this._cardsContainer.getElement().contains(prevFilmCardComponent.getElement())) {
+      replace(this._filmCardComponent, prevFilmCardComponent);
+    }
+
+    remove(prevFilmCardComponent);
+  }
+
+  destroy() {
+    remove(this._filmCardComponent);
   }
 
   _openPopup() {

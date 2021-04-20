@@ -12,6 +12,7 @@ export default class MovieList {
   constructor(movieListContainer) {
     this._movieListContainer = movieListContainer;
     this._renderedCardCount = FILM_COUNT_PER_STEP;
+    this._cardPresenter = {};
 
     this._sortComponent = new SortView();
     this._filmsContainerComponent = new FilmsContainerView();
@@ -40,6 +41,7 @@ export default class MovieList {
   _renderCard(card) {
     const cardPresenter = new CardPresenter(this._cardsContainerComponent);
     cardPresenter.init(card, this._commentsArray);
+    this._cardPresenter[card.id] = cardPresenter;
   }
 
   _renderCards(from, to) {
@@ -60,6 +62,15 @@ export default class MovieList {
   _renderShowMoreButton() {
     render(this._filmsListComponent, this._showMoreButtonComponent, RenderPosition.BEFOREEND);
     this._showMoreButtonComponent.setClickHandler(this._handleShowMoreButtonClick);
+  }
+
+  _clearCardList() {
+    Object
+      .values(this._cardPresenter)
+      .forEach((presenter) => presenter.destroy());
+    this._cardPresenter = {};
+    this._renderedCardCount = FILM_COUNT_PER_STEP;
+    remove(this._showMoreButtonComponent);
   }
 
   _renderCardsList() {
