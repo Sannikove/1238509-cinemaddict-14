@@ -2,10 +2,8 @@ import SortView from '../view/sort.js';
 import FilmsContainerView from '../view/films-container.js';
 import FilmsListView from '../view/films-list.js';
 import CardsContainerView from '../view/cards-container.js';
-import FilmCardView from '../view/film-card.js';
 import ShowMoreButtonView from '../view/show-more-button.js';
-import PopupView from '../view/popup.js';
-import CommentView from '../view/comment.js';
+import CardPresenter from './card.js';
 import {render, RenderPosition, remove} from '../utils/render.js';
 
 const FILM_COUNT_PER_STEP = 5;
@@ -39,38 +37,9 @@ export default class MovieList {
     render(this._movieListContainer, this._sortComponent, RenderPosition.AFTERBEGIN);
   }
 
-  _renderComments(card, popup) {
-    const container = popup.querySelector('.film-details__comments-list');
-    for (let i = 0; i < card.comments.length; i++) {
-      for (let j = 0; j < this._commentsArray.length; j++) {
-        if (card.comments[i] == this._commentsArray[j].id) {
-          render(container, new CommentView(this._commentsArray[j]), RenderPosition.BEFOREEND);
-        }
-      }
-    }
-  }
-
-  _renderPopup(CardComponent, card) {
-    const PopupComponent = new PopupView(card);
-    this._renderComments(card, PopupComponent.getElement());
-
-    const openPopup = () => {
-      document.body.appendChild(PopupComponent.getElement());
-      document.body.classList.add('hide-overflow');
-    };
-    const closePopup = () => {
-      document.body.removeChild(PopupComponent.getElement());
-      document.body.classList.remove('hide-overflow');
-    };
-
-    CardComponent.setOpenPopupClickHandler(() => openPopup());
-    PopupComponent.setCloseBtnClickHandler(() => closePopup());
-  }
-
   _renderCard(card) {
-    const FilmCardComponent = new FilmCardView(card);
-    render(this._cardsContainerComponent, FilmCardComponent, RenderPosition.BEFOREEND);
-    this._renderPopup(FilmCardComponent, card);
+    const cardPresenter = new CardPresenter(this._cardsContainerComponent);
+    cardPresenter.init(card, this._commentsArray);
   }
 
   _renderCards(from, to) {
