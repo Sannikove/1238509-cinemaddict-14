@@ -4,6 +4,7 @@ import FilmsListView from '../view/films-list.js';
 import CardsContainerView from '../view/cards-container.js';
 import ShowMoreButtonView from '../view/show-more-button.js';
 import CardPresenter from './card.js';
+import {updateItem} from '../utils/common.js';
 import {render, RenderPosition, remove} from '../utils/render.js';
 
 const FILM_COUNT_PER_STEP = 5;
@@ -20,6 +21,7 @@ export default class MovieList {
     this._cardsContainerComponent = new CardsContainerView();
     this._showMoreButtonComponent = new ShowMoreButtonView();
 
+    this._handleCardChange = this._handleCardChange.bind(this);
     this._handleShowMoreButtonClick = this._handleShowMoreButtonClick.bind(this);
   }
 
@@ -34,12 +36,17 @@ export default class MovieList {
     this._renderMovieList();
   }
 
+  _handleCardChange(updatedCard) {
+    this._filmCards = updateItem(this._filmCards, updatedCard);
+    this._cardPresenter[updatedCard.id].init(updatedCard, this._commentsArray);
+  }
+
   _renderSort() {
     render(this._movieListContainer, this._sortComponent, RenderPosition.AFTERBEGIN);
   }
 
   _renderCard(card) {
-    const cardPresenter = new CardPresenter(this._cardsContainerComponent);
+    const cardPresenter = new CardPresenter(this._cardsContainerComponent, this._handleCardChange);
     cardPresenter.init(card, this._commentsArray);
     this._cardPresenter[card.id] = cardPresenter;
   }

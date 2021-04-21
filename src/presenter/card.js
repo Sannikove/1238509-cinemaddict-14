@@ -4,13 +4,19 @@ import CommentView from '../view/comment.js';
 import {render, RenderPosition, remove, replace} from '../utils/render.js';
 
 export default class Card {
-  constructor(cardsContainer) {
+  constructor(cardsContainer, changeData) {
     this._cardsContainer = cardsContainer;
-
+    this._changeData = changeData;
     this._filmCardComponent = null;
+    this._popupComponent = null;
 
     this._handleOpenPopupClick = this._handleOpenPopupClick.bind(this);
     this._handleCloseBtnClick = this._handleCloseBtnClick.bind(this);
+
+    this._handleWatchListClick = this._handleWatchListClick.bind(this);
+    this._handleWatchedClick = this._handleWatchedClick.bind(this);
+    this._handleFavoriteClick = this._handleFavoriteClick.bind(this);
+
   }
 
   init(card, commentsArray) {
@@ -18,12 +24,21 @@ export default class Card {
     this._commentsArray = commentsArray;
 
     const prevFilmCardComponent = this._filmCardComponent;
+    const prevPopupComponent = this._popupComponent;
 
     this._filmCardComponent = new FilmCardView(card);
     this._popupComponent = new PopupView(card);
 
     this._filmCardComponent.setOpenPopupClickHandler(this._handleOpenPopupClick);
     this._popupComponent.setCloseBtnClickHandler(this._handleCloseBtnClick);
+
+    this._filmCardComponent.setWatchListClickHandler(this._handleWatchListClick);
+    this._filmCardComponent.setWatchedClickHandler(this._handleWatchedClick);
+    this._filmCardComponent.setFavoriteClickHandler(this._handleFavoriteClick);
+
+    this._popupComponent.setWatchListClickHandler(this._handleWatchListClick);
+    this._popupComponent.setWatchedClickHandler(this._handleWatchedClick);
+    this._popupComponent.setFavoriteClickHandler(this._handleFavoriteClick);
 
     if (prevFilmCardComponent === null) {
       this._renderCard();
@@ -32,6 +47,11 @@ export default class Card {
 
     if (this._cardsContainer.getElement().contains(prevFilmCardComponent.getElement())) {
       replace(this._filmCardComponent, prevFilmCardComponent);
+    }
+
+    if (document.contains(prevPopupComponent.getElement())) {
+      this._renderComments();
+      replace(this._popupComponent, prevPopupComponent);
     }
 
     remove(prevFilmCardComponent);
@@ -57,6 +77,64 @@ export default class Card {
 
   _handleCloseBtnClick() {
     this._closePopup();
+  }
+
+
+  _handleWatchListClick() {
+    this._changeData(
+      Object.assign(
+        {},
+        this._card,
+        {
+          userFilmInteractions:
+            Object.assign(
+              {},
+              this._card.userFilmInteractions,
+              {
+                isWatchlist: !this._card.userFilmInteractions.isWatchlist,
+              },
+            ),
+        },
+      ),
+    );
+  }
+
+  _handleWatchedClick() {
+    this._changeData(
+      Object.assign(
+        {},
+        this._card,
+        {
+          userFilmInteractions:
+            Object.assign(
+              {},
+              this._card.userFilmInteractions,
+              {
+                isWatched: !this._card.userFilmInteractions.isWatched,
+              },
+            ),
+        },
+      ),
+    );
+  }
+
+  _handleFavoriteClick() {
+    this._changeData(
+      Object.assign(
+        {},
+        this._card,
+        {
+          userFilmInteractions:
+            Object.assign(
+              {},
+              this._card.userFilmInteractions,
+              {
+                isFavorite: !this._card.userFilmInteractions.isFavorite,
+              },
+            ),
+        },
+      ),
+    );
   }
 
   _renderComments() {
