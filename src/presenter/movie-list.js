@@ -23,6 +23,7 @@ export default class MovieList {
 
     this._handleCardChange = this._handleCardChange.bind(this);
     this._handleShowMoreButtonClick = this._handleShowMoreButtonClick.bind(this);
+    this._handleModeChange = this._handleModeChange.bind(this);
   }
 
   init(filmCards, commentsArray) {
@@ -36,6 +37,12 @@ export default class MovieList {
     this._renderMovieList();
   }
 
+  _handleModeChange() {
+    Object
+      .values(this._cardPresenter)
+      .forEach((presenter) => presenter.closeOtherPopup());
+  }
+
   _handleCardChange(updatedCard) {
     this._filmCards = updateItem(this._filmCards, updatedCard);
     this._cardPresenter[updatedCard.id].init(updatedCard, this._commentsArray);
@@ -46,7 +53,7 @@ export default class MovieList {
   }
 
   _renderCard(card) {
-    const cardPresenter = new CardPresenter(this._cardsContainerComponent, this._handleCardChange);
+    const cardPresenter = new CardPresenter(this._cardsContainerComponent, this._handleCardChange, this._handleModeChange);
     cardPresenter.init(card, this._commentsArray);
     this._cardPresenter[card.id] = cardPresenter;
   }

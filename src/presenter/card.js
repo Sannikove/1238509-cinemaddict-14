@@ -3,12 +3,20 @@ import PopupView from '../view/popup.js';
 import CommentView from '../view/comment.js';
 import {render, RenderPosition, remove, replace} from '../utils/render.js';
 
+const Mode = {
+  OPEN: 'OPEN',
+  CLOSE: 'CLOSE',
+};
+
 export default class Card {
-  constructor(cardsContainer, changeData) {
+  constructor(cardsContainer, changeData, changeMode) {
     this._cardsContainer = cardsContainer;
     this._changeData = changeData;
+    this._changeMode = changeMode;
+
     this._filmCardComponent = null;
     this._popupComponent = null;
+    this._mode = Mode.CLOSE;
 
     this._handleOpenPopupClick = this._handleOpenPopupClick.bind(this);
     this._handleCloseBtnClick = this._handleCloseBtnClick.bind(this);
@@ -61,14 +69,23 @@ export default class Card {
     remove(this._filmCardComponent);
   }
 
+  closeOtherPopup() {
+    if (this._mode !== Mode.CLOSE) {
+      this._closePopup();
+    }
+  }
+
   _openPopup() {
     document.body.appendChild(this._popupComponent.getElement());
     document.body.classList.add('hide-overflow');
+    this._changeMode();
+    this._mode = Mode.OPEN;
   }
 
   _closePopup() {
     document.body.removeChild(this._popupComponent.getElement());
     document.body.classList.remove('hide-overflow');
+    this._mode = Mode.CLOSE;
   }
 
   _handleOpenPopupClick() {
