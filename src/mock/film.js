@@ -1,4 +1,5 @@
 import dayjs from 'dayjs';
+import nanoid from 'nanoid';
 import {POSTERS, FILMS, NAMES, DESCRIPTIONS, GENRES, COUNTRIES} from '../const.js';
 import {getRandomInteger, getRandomArrayElement, generateRandomArray} from '../utils/common.js';
 import {commentsArray} from '../main.js';
@@ -35,6 +36,7 @@ const generateIdArray = () => {
 
 export const generateFilmCard = () => {
   return {
+    id: nanoid(),
     poster: generatePoster(),
     age: getRandomInteger(0, 18),
     title: getRandomArrayElement(FILMS),

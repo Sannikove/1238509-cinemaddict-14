@@ -62,16 +62,15 @@ export default class FilmCard extends AbstractView {
     super();
     this._card = card;
 
+
     this._openPopupClickHandler = this._openPopupClickHandler.bind(this);
+    this._watchListClickHandler = this._watchListClickHandler.bind(this);
+    this._watchedClickHandler = this._watchedClickHandler.bind(this);
+    this._favoriteClickHandler = this._favorireClickHandler.bind(this);
   }
 
   getTemplate() {
     return createFilmCardTemplate(this._card);
-  }
-
-  _openPopupClickHandler(evt) {
-    evt.preventDefault();
-    this._callback.openPopupClick();
   }
 
   setOpenPopupClickHandler(callback) {
@@ -79,5 +78,40 @@ export default class FilmCard extends AbstractView {
     this.getElement().querySelector('.film-card__poster').addEventListener('click', this._openPopupClickHandler);
     this.getElement().querySelector('.film-card__title').addEventListener('click', this._openPopupClickHandler);
     this.getElement().querySelector('.film-card__comments').addEventListener('click', this._openPopupClickHandler);
+  }
+
+  setWatchListClickHandler(callback) {
+    this._callback.watchListClick = callback;
+    this.getElement().querySelector('.film-card__controls-item--add-to-watchlist').addEventListener('click', this._watchListClickHandler);
+  }
+
+  setWatchedClickHandler(callback) {
+    this._callback.watchedClick = callback;
+    this.getElement().querySelector('.film-card__controls-item--mark-as-watched').addEventListener('click', this._watchedClickHandler);
+  }
+
+  setFavoriteClickHandler(callback) {
+    this._callback.favoriteClick = callback;
+    this.getElement().querySelector('.film-card__controls-item--favorite').addEventListener('click', this._favoriteClickHandler);
+  }
+
+  _watchListClickHandler(evt){
+    evt.preventDefault();
+    this._callback.watchListClick();
+  }
+
+  _watchedClickHandler(evt){
+    evt.preventDefault();
+    this._callback.watchedClick();
+  }
+
+  _favorireClickHandler(evt){
+    evt.preventDefault();
+    this._callback.favoriteClick();
+  }
+
+  _openPopupClickHandler(evt) {
+    evt.preventDefault();
+    this._callback.openPopupClick();
   }
 }
