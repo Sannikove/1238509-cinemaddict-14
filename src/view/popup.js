@@ -1,8 +1,59 @@
 import dayjs from 'dayjs';
 import {convertHours} from '../utils/time.js';
+import {EMOJIES} from '../const.js';
 import AbstractView from './abstract.js';
 
-const createPopupTemplate = (card) => {
+
+const getChecked = (value) => {
+  switch (value) {
+    case true:
+      return 'checked';
+    case false:
+      return '';
+  }
+};
+
+const createUserEmojiTemplate = (smile, sleeping, puke, angry) => {
+  let emoji = '';
+  if (smile) {
+    emoji = 'smile';
+  } else if (sleeping) {
+    emoji = 'sleeping';
+  } else if (puke) {
+    emoji = 'puke';
+  } else if (angry) {
+    emoji = 'angry';
+  } else {
+    return '';
+  }
+
+  return  `<img
+    src="./images/emoji/${emoji}.png"
+    width="55"
+    height="55"
+    alt="emoji-${emoji}"></img>`;
+};
+
+const createCommentEditEmojiesTemplate = () => {
+  return EMOJIES.map((emoji) => `<input
+  class="film-details__emoji-item visually-hidden"
+  name="comment-emoji"
+  type="radio"
+  id="emoji-${emoji}"
+  value="${emoji}"
+  >
+  <label
+  class="film-details__emoji-label"
+  for="emoji-${emoji}">
+  <img
+  src="./images/emoji/${emoji}.png"
+  width="30"
+  height="30"
+  alt="emoji">
+  </label>`).join('');
+};
+
+const createPopupTemplate = (data) => {
   const {
     poster,
     age,
@@ -19,7 +70,12 @@ const createPopupTemplate = (card) => {
     description,
     comments,
     userFilmInteractions,
-  } = card;
+    IsSmile,
+    IsSleeping,
+    IsPuke,
+    IsAngry,
+    comment,
+  } = data;
 
   const release = dayjs(releaseDate).format('D MMMM YYYY');
 
@@ -40,20 +96,14 @@ const createPopupTemplate = (card) => {
 
   const interactions = Object.values(userFilmInteractions);
 
-  const getChecked = (value) => {
-    switch (value) {
-      case true:
-        return 'checked';
-      case false:
-        return '';
-    }
-  };
-
   const watchlistChecked = getChecked(interactions[0]);
   const watchedChecked = getChecked(interactions[1]);
   const favoriteChecked = getChecked(interactions[2]);
 
   const commentsCount = comments.length;
+
+  const userEmoji = createUserEmojiTemplate(IsSmile, IsSleeping, IsPuke, IsAngry);
+  const emojiesTemplate = createCommentEditEmojiesTemplate();
 
   return `<section class="film-details">
     <form class="film-details__inner" action="" method="get">
@@ -123,27 +173,12 @@ const createPopupTemplate = (card) => {
           <h3 class="film-details__comments-title">Comments <span class="film-details__comments-count">${commentsCount}</span></h3>
           <ul class="film-details__comments-list"></ul>
           <div class="film-details__new-comment">
-            <div class="film-details__add-emoji-label"></div>
+            <div class="film-details__add-emoji-label">${userEmoji}</div>
             <label class="film-details__comment-label">
-            <textarea class="film-details__comment-input" placeholder="Select reaction below and write comment here" name="comment"></textarea>
+            <textarea class="film-details__comment-input" placeholder="Select reaction below and write comment here" name="comment">${comment ? comment : ''}</textarea>
             </label>
             <div class="film-details__emoji-list">
-              <input class="film-details__emoji-item visually-hidden" name="comment-emoji" type="radio" id="emoji-smile" value="smile">
-              <label class="film-details__emoji-label" for="emoji-smile">
-                <img src="./images/emoji/smile.png" width="30" height="30" alt="emoji">
-              </label>
-              <input class="film-details__emoji-item visually-hidden" name="comment-emoji" type="radio" id="emoji-sleeping" value="sleeping">
-              <label class="film-details__emoji-label" for="emoji-sleeping">
-                <img src="./images/emoji/sleeping.png" width="30" height="30" alt="emoji">
-              </label>
-              <input class="film-details__emoji-item visually-hidden" name="comment-emoji" type="radio" id="emoji-puke" value="puke">
-              <label class="film-details__emoji-label" for="emoji-puke">
-                <img src="./images/emoji/puke.png" width="30" height="30" alt="emoji">
-              </label>
-              <input class="film-details__emoji-item visually-hidden" name="comment-emoji" type="radio" id="emoji-angry" value="angry">
-              <label class="film-details__emoji-label" for="emoji-angry">
-                <img src="./images/emoji/angry.png" width="30" height="30" alt="emoji">
-              </label>
+              ${emojiesTemplate}
             </div>
           </div>
         </section>
@@ -155,16 +190,113 @@ const createPopupTemplate = (card) => {
 export default class Popup extends AbstractView{
   constructor(card) {
     super();
-    this._card = card;
+
+    this._data = Popup.parseCardToData(card);
+
 
     this._closeBtnClickHandler = this._closeBtnClickHandler.bind(this);
     this._watchListClickHandler = this._watchListClickHandler.bind(this);
     this._watchedClickHandler = this._watchedClickHandler.bind(this);
     this._favoriteClickHandler = this._favorireClickHandler.bind(this);
+    this._formToggleHandler = this._formToggleHandler.bind(this);
+    this._commentInputHandler = this._commentInputHandler.bind(this);
+
+    this._setInnerHandlers();
+
   }
 
   getTemplate() {
-    return createPopupTemplate(this._card);
+    return createPopupTemplate(this._data);
+  }
+
+  updateData(update, justDataUpdating) {
+    if (!update) {
+      return;
+    }
+
+    this._data = Object.assign(
+      {},
+      this._data,
+      update,
+    );
+
+    if (justDataUpdating) {
+      return;
+    }
+
+    this.updateElement();
+  }
+
+  updateElement() {
+    const prevElement = this.getElement();
+    const parent = prevElement.parentElement;
+    this.removeElement();
+
+    const newElement = this.getElement();
+
+    parent.replaceChild(newElement, prevElement);
+    this.restoreHandlers();
+  }
+
+  restoreHandlers() {
+    this._setInnerHandlers();
+    this.setCloseBtnClickHandler(this._callback.closeBtnClick);
+    this.setFavoriteClickHandler(this._callback.favoriteClick);
+    this.setWatchListClickHandler(this._callback.watchListClick);
+    this.setWatchedClickHandler(this._callback.watchedClick);
+  }
+
+  _setInnerHandlers() {
+    this.getElement()
+      .querySelector('.film-details__inner')
+      .addEventListener('click', this._formToggleHandler);
+    this.getElement()
+      .querySelector('.film-details__comment-input')
+      .addEventListener('input', this._commentInputHandler);
+  }
+
+  _formToggleHandler(evt) {
+    switch (evt.target.value) {
+      case 'smile':
+        this.updateData({
+          IsSmile: true,
+          IsSleeping: false,
+          IsPuke: false,
+          IsAngry: false,
+        });
+        break;
+      case 'sleeping':
+        this.updateData({
+          IsSleeping: true,
+          IsSmile: false,
+          IsPuke: false,
+          IsAngry: false,
+        });
+        break;
+      case 'puke':
+        this.updateData({
+          IsPuke: true,
+          IsSmile: false,
+          IsSleeping: false,
+          IsAngry: false,
+        });
+        break;
+      case 'angry':
+        this.updateData({
+          IsAngry: true,
+          IsSmile: false,
+          IsSleeping: false,
+          IsPuke: false,
+        });
+        break;
+    }
+  }
+
+  _commentInputHandler(evt) {
+    evt.preventDefault();
+    this.updateData({
+      comment: evt.target.value,
+    }, true);
   }
 
   setCloseBtnClickHandler(callback) {
@@ -206,4 +338,29 @@ export default class Popup extends AbstractView{
     evt.preventDefault();
     this._callback.closeBtnClick();
   }
+
+  static parseCardToData(card) {
+    return Object.assign(
+      {},
+      card,
+      {
+        IsSmile: false,
+        IsSleeping: false,
+        IsPuke: false,
+        IsAngry: false,
+      },
+    );
+  }
+
+  static parseDataToCard(data) {
+    data = Object.assign({}, data);
+
+    delete data.IsSmile;
+    delete data.IsSleeping;
+    delete data.IsPuke;
+    delete data.IsAngry;
+
+    return data;
+  }
+
 }
