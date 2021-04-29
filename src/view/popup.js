@@ -1,7 +1,6 @@
 import dayjs from 'dayjs';
 import {convertHours} from '../utils/time.js';
 import {EMOJIES} from '../const.js';
-import AbstractView from './abstract.js';
 import SmartView from './smart.js';
 
 
@@ -10,9 +9,14 @@ const createCommentsListTemplate = (comments, commentsArray) => {
   for (let i = 0; i < comments.length; i++) {
     for (let j = 0; j < commentsArray.length; j++) {
       if (comments[i] == commentsArray[j].id) {
-          const {nickName, commentDate, comment, emotion} = commentsArray[j];
-          const commentDay = dayjs(commentDate).format('YYYY/MM/D H:m');
-          commentList = commentList + `<li class="film-details__comment">
+        const {
+          nickName,
+          commentDate,
+          comment,
+          emotion,
+        } = commentsArray[j];
+        const commentDay = dayjs(commentDate).format('YYYY/MM/D H:m');
+        commentList = commentList + `<li class="film-details__comment">
             <span class="film-details__comment-emoji">
               <img src="./images/emoji/${emotion}.png" width="55" height="55" alt="emoji-smile">
             </span>
@@ -29,7 +33,7 @@ const createCommentsListTemplate = (comments, commentsArray) => {
     }
   }
   return commentList;
-}
+};
 
 
 const getChecked = (value) => {
@@ -41,34 +45,23 @@ const getChecked = (value) => {
   }
 };
 
-const createUserEmojiTemplate = (smile, sleeping, puke, angry) => {
-  let emoji = '';
-  if (smile) {
-    emoji = 'smile';
-  } else if (sleeping) {
-    emoji = 'sleeping';
-  } else if (puke) {
-    emoji = 'puke';
-  } else if (angry) {
-    emoji = 'angry';
-  } else {
-    return '';
-  }
-
-  return  `<img
+const createUserEmojiTemplate = (emoji) => {
+  return emoji ? `<img
     src="./images/emoji/${emoji}.png"
     width="55"
     height="55"
-    alt="emoji-${emoji}"></img>`;
+    alt="emoji-${emoji}"></img>` :
+    '';
 };
 
-const createCommentEditEmojiesTemplate = () => {
+const createCommentEditEmojiesTemplate = (currentEmoji) => {
   return EMOJIES.map((emoji) => `<input
   class="film-details__emoji-item visually-hidden"
   name="comment-emoji"
   type="radio"
   id="emoji-${emoji}"
   value="${emoji}"
+  ${currentEmoji === emoji ? 'checked' : ''}
   >
   <label
   class="film-details__emoji-label"
@@ -98,10 +91,7 @@ const createPopupTemplate = (data) => {
     description,
     comments,
     userFilmInteractions,
-    IsSmile,
-    IsSleeping,
-    IsPuke,
-    IsAngry,
+    emoji,
     comment,
     commentsList,
   } = data;
@@ -132,8 +122,8 @@ const createPopupTemplate = (data) => {
   const commentsCount = comments.length;
   const commentsArray = createCommentsListTemplate(comments, commentsList);
 
-  const userEmoji = createUserEmojiTemplate(IsSmile, IsSleeping, IsPuke, IsAngry);
-  const emojiesTemplate = createCommentEditEmojiesTemplate();
+  const userEmoji = createUserEmojiTemplate(emoji);
+  const emojiesTemplate = createCommentEditEmojiesTemplate(emoji);
 
   return `<section class="film-details">
     <form class="film-details__inner" action="" method="get">
@@ -217,7 +207,7 @@ const createPopupTemplate = (data) => {
   </section>`;
 };
 
-export default class Popup extends SmartView{
+export default class Popup extends SmartView {
   constructor(card, commentsArray) {
     super();
 
@@ -231,8 +221,8 @@ export default class Popup extends SmartView{
     this._formToggleHandler = this._formToggleHandler.bind(this);
     this._commentInputHandler = this._commentInputHandler.bind(this);
 
-    this._setInnerHandlers();
 
+    this._setInnerHandlers();
   }
 
   getTemplate() {
@@ -260,34 +250,22 @@ export default class Popup extends SmartView{
     switch (evt.target.value) {
       case 'smile':
         this.updateData({
-          IsSmile: true,
-          IsSleeping: false,
-          IsPuke: false,
-          IsAngry: false,
+          emoji: 'smile',
         });
         break;
       case 'sleeping':
         this.updateData({
-          IsSleeping: true,
-          IsSmile: false,
-          IsPuke: false,
-          IsAngry: false,
+          emoji: 'sleeping',
         });
         break;
       case 'puke':
         this.updateData({
-          IsPuke: true,
-          IsSmile: false,
-          IsSleeping: false,
-          IsAngry: false,
+          emoji: 'puke',
         });
         break;
       case 'angry':
         this.updateData({
-          IsAngry: true,
-          IsSmile: false,
-          IsSleeping: false,
-          IsPuke: false,
+          emoji: 'angry',
         });
         break;
     }
@@ -320,17 +298,17 @@ export default class Popup extends SmartView{
     this.getElement().querySelector('input[name=favorite]').addEventListener('change', this._favoriteClickHandler);
   }
 
-  _watchListClickHandler(evt){
+  _watchListClickHandler(evt) {
     evt.preventDefault();
     this._callback.watchListClick();
   }
 
-  _watchedClickHandler(evt){
+  _watchedClickHandler(evt) {
     evt.preventDefault();
     this._callback.watchedClick();
   }
 
-  _favorireClickHandler(evt){
+  _favorireClickHandler(evt) {
     evt.preventDefault();
     this._callback.favoriteClick();
   }
@@ -341,14 +319,9 @@ export default class Popup extends SmartView{
   }
 
   static parseCardToData(card, commentsArray) {
-    return Object.assign(
-      {},
-      card,
-      {
-        IsSmile: false,
-        IsSleeping: false,
-        IsPuke: false,
-        IsAngry: false,
+    return Object.assign({},
+      card, {
+        emoji: null,
         comment: null,
         commentsList: commentsArray,
       },
@@ -358,10 +331,7 @@ export default class Popup extends SmartView{
   static parseDataToCard(data) {
     data = Object.assign({}, data);
 
-    delete data.IsSmile;
-    delete data.IsSleeping;
-    delete data.IsPuke;
-    delete data.IsAngry;
+    delete data.emoji;
     delete data.comment;
     delete data.commentsList;
 

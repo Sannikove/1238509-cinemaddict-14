@@ -60,7 +60,6 @@ export default class Card {
     }
 
     if (document.contains(prevPopupComponent.getElement())) {
-      // this._renderComments();
       replace(this._popupComponent, prevPopupComponent);
     }
 
@@ -156,19 +155,7 @@ export default class Card {
     );
   }
 
-  // _renderComments() {
-  //   const container = this._popupComponent.getElement().querySelector('.film-details__comments-list');
-  //   for (let i = 0; i < this._card.comments.length; i++) {
-  //     for (let j = 0; j < this._commentsArray.length; j++) {
-  //       if (this._card.comments[i] == this._commentsArray[j].id) {
-  //         render(container, new CommentView(this._commentsArray[j]), RenderPosition.BEFOREEND);
-  //       }
-  //     }
-  //   }
-  // }
-
   _renderCard(){
     render(this._cardsContainer, this._filmCardComponent, RenderPosition.BEFOREEND);
-    // this._renderComments();
   }
 }

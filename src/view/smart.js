@@ -21,10 +21,11 @@ export default class Smart extends Abstract {
       return;
     }
 
-    this.updateElement();
+    const scrollElement = this.getElement().scrollTop;
+    this.updateElement(scrollElement);
   }
 
-  updateElement() {
+  updateElement(scrollElement) {
     const prevElement = this.getElement();
     const parent = prevElement.parentElement;
     this.removeElement();
@@ -34,6 +35,7 @@ export default class Smart extends Abstract {
     parent.replaceChild(newElement, prevElement);
 
     this.restoreHandlers();
+    this.getElement().scrollTop = scrollElement;
   }
 
   restoreHandlers() {
