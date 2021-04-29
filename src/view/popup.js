@@ -2,6 +2,34 @@ import dayjs from 'dayjs';
 import {convertHours} from '../utils/time.js';
 import {EMOJIES} from '../const.js';
 import AbstractView from './abstract.js';
+import SmartView from './smart.js';
+
+
+const createCommentsListTemplate = (comments, commentsArray) => {
+  let commentList = '';
+  for (let i = 0; i < comments.length; i++) {
+    for (let j = 0; j < commentsArray.length; j++) {
+      if (comments[i] == commentsArray[j].id) {
+          const {nickName, commentDate, comment, emotion} = commentsArray[j];
+          const commentDay = dayjs(commentDate).format('YYYY/MM/D H:m');
+          commentList = commentList + `<li class="film-details__comment">
+            <span class="film-details__comment-emoji">
+              <img src="./images/emoji/${emotion}.png" width="55" height="55" alt="emoji-smile">
+            </span>
+            <div>
+              <p class="film-details__comment-text">${comment}</p>
+              <p class="film-details__comment-info">
+              <span class="film-details__comment-author">${nickName}</span>
+              <span class="film-details__comment-day">${commentDay}</span>
+              <button class="film-details__comment-delete">Delete</button>
+              </p>
+            </div>
+          </li>`;
+      }
+    }
+  }
+  return commentList;
+}
 
 
 const getChecked = (value) => {
@@ -75,6 +103,7 @@ const createPopupTemplate = (data) => {
     IsPuke,
     IsAngry,
     comment,
+    commentsList,
   } = data;
 
   const release = dayjs(releaseDate).format('D MMMM YYYY');
@@ -101,6 +130,7 @@ const createPopupTemplate = (data) => {
   const favoriteChecked = getChecked(interactions[2]);
 
   const commentsCount = comments.length;
+  const commentsArray = createCommentsListTemplate(comments, commentsList);
 
   const userEmoji = createUserEmojiTemplate(IsSmile, IsSleeping, IsPuke, IsAngry);
   const emojiesTemplate = createCommentEditEmojiesTemplate();
@@ -171,7 +201,7 @@ const createPopupTemplate = (data) => {
       <div class="film-details__bottom-container">
         <section class="film-details__comments-wrap">
           <h3 class="film-details__comments-title">Comments <span class="film-details__comments-count">${commentsCount}</span></h3>
-          <ul class="film-details__comments-list"></ul>
+          <ul class="film-details__comments-list">${commentsArray}</ul>
           <div class="film-details__new-comment">
             <div class="film-details__add-emoji-label">${userEmoji}</div>
             <label class="film-details__comment-label">
@@ -187,11 +217,11 @@ const createPopupTemplate = (data) => {
   </section>`;
 };
 
-export default class Popup extends AbstractView{
-  constructor(card) {
+export default class Popup extends SmartView{
+  constructor(card, commentsArray) {
     super();
 
-    this._data = Popup.parseCardToData(card);
+    this._data = Popup.parseCardToData(card, commentsArray);
 
 
     this._closeBtnClickHandler = this._closeBtnClickHandler.bind(this);
@@ -207,35 +237,6 @@ export default class Popup extends AbstractView{
 
   getTemplate() {
     return createPopupTemplate(this._data);
-  }
-
-  updateData(update, justDataUpdating) {
-    if (!update) {
-      return;
-    }
-
-    this._data = Object.assign(
-      {},
-      this._data,
-      update,
-    );
-
-    if (justDataUpdating) {
-      return;
-    }
-
-    this.updateElement();
-  }
-
-  updateElement() {
-    const prevElement = this.getElement();
-    const parent = prevElement.parentElement;
-    this.removeElement();
-
-    const newElement = this.getElement();
-
-    parent.replaceChild(newElement, prevElement);
-    this.restoreHandlers();
   }
 
   restoreHandlers() {
@@ -339,7 +340,7 @@ export default class Popup extends AbstractView{
     this._callback.closeBtnClick();
   }
 
-  static parseCardToData(card) {
+  static parseCardToData(card, commentsArray) {
     return Object.assign(
       {},
       card,
@@ -348,6 +349,8 @@ export default class Popup extends AbstractView{
         IsSleeping: false,
         IsPuke: false,
         IsAngry: false,
+        comment: null,
+        commentsList: commentsArray,
       },
     );
   }
@@ -359,6 +362,8 @@ export default class Popup extends AbstractView{
     delete data.IsSleeping;
     delete data.IsPuke;
     delete data.IsAngry;
+    delete data.comment;
+    delete data.commentsList;
 
     return data;
   }
