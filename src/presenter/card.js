@@ -1,6 +1,6 @@
 import FilmCardView from '../view/film-card.js';
 import PopupView from '../view/popup.js';
-import CommentView from '../view/comment.js';
+// import CommentView from '../view/comment.js';
 import {render, RenderPosition, remove, replace} from '../utils/render.js';
 
 const Mode = {
@@ -31,11 +31,13 @@ export default class Card {
     this._card = card;
     this._commentsArray = commentsArray;
 
+
     const prevFilmCardComponent = this._filmCardComponent;
     const prevPopupComponent = this._popupComponent;
 
     this._filmCardComponent = new FilmCardView(card);
-    this._popupComponent = new PopupView(card);
+    this._popupComponent = new PopupView(card, commentsArray);
+
 
     this._filmCardComponent.setOpenPopupClickHandler(this._handleOpenPopupClick);
     this._popupComponent.setCloseBtnClickHandler(this._handleCloseBtnClick);
@@ -58,7 +60,6 @@ export default class Card {
     }
 
     if (document.contains(prevPopupComponent.getElement())) {
-      this._renderComments();
       replace(this._popupComponent, prevPopupComponent);
     }
 
@@ -154,19 +155,7 @@ export default class Card {
     );
   }
 
-  _renderComments() {
-    const container = this._popupComponent.getElement().querySelector('.film-details__comments-list');
-    for (let i = 0; i < this._card.comments.length; i++) {
-      for (let j = 0; j < this._commentsArray.length; j++) {
-        if (this._card.comments[i] == this._commentsArray[j].id) {
-          render(container, new CommentView(this._commentsArray[j]), RenderPosition.BEFOREEND);
-        }
-      }
-    }
-  }
-
   _renderCard(){
     render(this._cardsContainer, this._filmCardComponent, RenderPosition.BEFOREEND);
-    this._renderComments();
   }
 }
