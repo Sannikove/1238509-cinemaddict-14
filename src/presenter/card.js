@@ -2,6 +2,7 @@ import FilmCardView from '../view/film-card.js';
 import PopupView from '../view/popup.js';
 // import CommentView from '../view/comment.js';
 import {render, RenderPosition, remove, replace} from '../utils/render.js';
+import {UserAction, UpdateType} from '../const.js';
 
 const Mode = {
   OPEN: 'OPEN',
@@ -24,6 +25,8 @@ export default class Card {
     this._handleWatchListClick = this._handleWatchListClick.bind(this);
     this._handleWatchedClick = this._handleWatchedClick.bind(this);
     this._handleFavoriteClick = this._handleFavoriteClick.bind(this);
+    //comment submit
+    this._handleFormSubmit = this._handleFormSubmit.bind(this);
 
   }
 
@@ -49,6 +52,8 @@ export default class Card {
     this._popupComponent.setWatchListClickHandler(this._handleWatchListClick);
     this._popupComponent.setWatchedClickHandler(this._handleWatchedClick);
     this._popupComponent.setFavoriteClickHandler(this._handleFavoriteClick);
+    //comment submit
+    this._popupComponent.setFormSubmitHandler(this._handleFormSubmit);
 
     if (prevFilmCardComponent === null) {
       this._renderCard();
@@ -100,6 +105,8 @@ export default class Card {
 
   _handleWatchListClick() {
     this._changeData(
+      UserAction.UPDATE_CARD,
+      UpdateType.MINOR,
       Object.assign(
         {},
         this._card,
@@ -119,6 +126,8 @@ export default class Card {
 
   _handleWatchedClick() {
     this._changeData(
+      UserAction.UPDATE_CARD,
+      UpdateType.MINOR,
       Object.assign(
         {},
         this._card,
@@ -138,6 +147,8 @@ export default class Card {
 
   _handleFavoriteClick() {
     this._changeData(
+      UserAction.UPDATE_CARD,
+      UpdateType.MINOR,
       Object.assign(
         {},
         this._card,
@@ -152,6 +163,16 @@ export default class Card {
             ),
         },
       ),
+    );
+  }
+
+  //отправка комментариев
+  _handleFormSubmit(card, commentsArray) {
+    this._changeData(
+      UserAction.ADD_COMMENT,
+      UpdateType.MINOR,
+      card,
+      commentsArray,
     );
   }
 

@@ -68,4 +68,16 @@ const COUNTRIES = [
 
 const EMOJIES = ['smile', 'sleeping', 'puke', 'angry'];
 
-export {POSTERS, FILMS, NAMES, DESCRIPTIONS, GENRES, COUNTRIES, EMOJIES};
+const UserAction = {
+  UPDATE_CARD: 'UPDATE_CARD',
+  ADD_COMMENT: 'ADD_COMMENT',
+  DELETE_COMMENT: 'DELETE_COMMENT',
+};
+
+const UpdateType = {
+  PATCH: 'PATCH',
+  MINOR: 'MINOR',
+  MAJOR: 'MAJOR',
+};
+
+export {POSTERS, FILMS, NAMES, DESCRIPTIONS, GENRES, COUNTRIES, EMOJIES, UpdateType, UserAction};

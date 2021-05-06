@@ -1,4 +1,5 @@
 import dayjs from 'dayjs';
+import nanoid from 'nanoid';
 import {convertHours} from '../utils/time.js';
 import {EMOJIES} from '../const.js';
 import SmartView from './smart.js';
@@ -91,10 +92,12 @@ const createPopupTemplate = (data) => {
     description,
     comments,
     userFilmInteractions,
-    emoji,
-    comment,
+    // emoji,
+    // comment,
     commentsList,
   } = data;
+
+  const {comment, emotion} = data.comment;
 
   const release = dayjs(releaseDate).format('D MMMM YYYY');
 
@@ -122,8 +125,8 @@ const createPopupTemplate = (data) => {
   const commentsCount = comments.length;
   const commentsArray = createCommentsListTemplate(comments, commentsList);
 
-  const userEmoji = createUserEmojiTemplate(emoji);
-  const emojiesTemplate = createCommentEditEmojiesTemplate(emoji);
+  const userEmoji = createUserEmojiTemplate(emotion);
+  const emojiesTemplate = createCommentEditEmojiesTemplate(emotion);
 
   return `<section class="film-details">
     <form class="film-details__inner" action="" method="get">
@@ -220,6 +223,8 @@ export default class Popup extends SmartView {
     this._favoriteClickHandler = this._favorireClickHandler.bind(this);
     this._formToggleHandler = this._formToggleHandler.bind(this);
     this._commentInputHandler = this._commentInputHandler.bind(this);
+    this._formSubmitHandler = this._formSubmitHandler.bind(this);
+    this._isCtrlEnterEvent = this._isCtrlEnterEvent.bind(this);
 
 
     this._setInnerHandlers();
@@ -244,13 +249,26 @@ export default class Popup extends SmartView {
     this.getElement()
       .querySelector('.film-details__comment-input')
       .addEventListener('input', this._commentInputHandler);
+    document.addEventListener('keydown', this._isCtrlEnterEvent);
+  }
+
+  _isCtrlEnterEvent(evt){
+    if(evt.ctrlKey && evt.keyCode == 13) {
+      this.getElement()
+      .querySelector('.film-details__inner').submit();
+    }
   }
 
   _formToggleHandler(evt) {
     switch (evt.target.value) {
       case 'smile':
-        this.updateData({
-          emoji: 'smile',
+        this.updateData({comment:
+          Object.assign({},
+            this._data.comment,
+            {
+              emotion: 'smile',
+            },
+          ),
         });
         break;
       case 'sleeping':
@@ -273,8 +291,17 @@ export default class Popup extends SmartView {
 
   _commentInputHandler(evt) {
     evt.preventDefault();
-    this.updateData({
-      comment: evt.target.value,
+    // this.updateData({
+    //   comment: evt.target.value,
+    // }, true);
+
+    this.updateData({comment:
+      Object.assign({},
+        this._data.comment,
+        {
+          comment: evt.target.value,
+        },
+      ),
     }, true);
   }
 
@@ -298,6 +325,11 @@ export default class Popup extends SmartView {
     this.getElement().querySelector('input[name=favorite]').addEventListener('change', this._favoriteClickHandler);
   }
 
+  setFormSubmitHandler(callback) {
+    this._callback.formSubmit = callback;
+    this.getElement().querySelector('.film-details__inner').addEventListener('submit', this._formSubmitHandler);
+  }
+
   _watchListClickHandler(evt) {
     evt.preventDefault();
     this._callback.watchListClick();
@@ -318,24 +350,43 @@ export default class Popup extends SmartView {
     this._callback.closeBtnClick();
   }
 
+  _formSubmitHandler(evt) {
+    evt.preventDefault();
+    this._callback.formSubmit(Popup.parseDataToCard(this._data));
+  }
+
   static parseCardToData(card, commentsArray) {
+    // return Object.assign({},
+    //   card, {
+    //     emoji: null,
+    //     comment: null,
+    //     commentsList: commentsArray,
+    //   },
+    // );
     return Object.assign({},
       card, {
-        emoji: null,
-        comment: null,
+        comment: {
+          comment: null,
+          commentDate: new Date,
+          emotion: null,
+          id: nanoid(),
+          nickName: "You",
+        },
         commentsList: commentsArray,
-      },
-    );
+      })
   }
 
   static parseDataToCard(data) {
     data = Object.assign({}, data);
 
-    delete data.emoji;
+    const commentsArray = data.commentsList.push(data.comment);
+
+    // delete data.emoji;
     delete data.comment;
     delete data.commentsList;
 
-    return data;
+    return data, commentsArray;
+
   }
 
 }
