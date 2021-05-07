@@ -32,7 +32,6 @@ export default class Card {
 
   init(card) {
     this._card = card;
-    // this._commentsArray = commentsArray;
 
 
     const prevFilmCardComponent = this._filmCardComponent;
@@ -168,7 +167,7 @@ export default class Card {
   _handleFormSubmit(commentsArray) {
     this._changeData(
       UserAction.ADD_COMMENT,
-      UpdateType.MINOR,
+      UpdateType.PATCH,
       commentsArray,
     );
   }

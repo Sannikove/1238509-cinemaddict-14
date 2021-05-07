@@ -222,7 +222,6 @@ export default class Popup extends SmartView {
     this._formToggleHandler = this._formToggleHandler.bind(this);
     this._commentInputHandler = this._commentInputHandler.bind(this);
     this._formSubmitHandler = this._formSubmitHandler.bind(this);
-    this._isCtrlEnterEvent = this._isCtrlEnterEvent.bind(this);
 
 
     this._setInnerHandlers();
@@ -247,14 +246,7 @@ export default class Popup extends SmartView {
     this.getElement()
       .querySelector('.film-details__comment-input')
       .addEventListener('input', this._commentInputHandler);
-    document.addEventListener('keydown', this._isCtrlEnterEvent);
-  }
-
-  _isCtrlEnterEvent(evt){
-    if(evt.ctrlKey && evt.keyCode == 13) {
-      this.getElement()
-        .querySelector('.film-details__inner').submit();
-    }
+    document.addEventListener('keydown', this._formSubmitHandler);
   }
 
   _formToggleHandler(evt) {
@@ -321,7 +313,14 @@ export default class Popup extends SmartView {
 
   setFormSubmitHandler(callback) {
     this._callback.formSubmit = callback;
-    this.getElement().querySelector('.film-details__inner').addEventListener('submit', this._formSubmitHandler);
+    document.addEventListener('keydown', this._formSubmitHandler);
+  }
+
+  _formSubmitHandler(evt) {
+    if(evt.ctrlKey && evt.keyCode == 13) {
+      evt.preventDefault();
+      this._callback.formSubmit(Popup.parseDataToComments(this._data));
+    }
   }
 
   _watchListClickHandler(evt) {
@@ -344,10 +343,6 @@ export default class Popup extends SmartView {
     this._callback.closeBtnClick();
   }
 
-  _formSubmitHandler(evt) {
-    evt.preventDefault();
-    this._callback.formSubmit(Popup.parseDataToCard(this._data));
-  }
 
   static parseCardToData(card, commentsArray) {
     return Object.assign({},
