@@ -1,6 +1,5 @@
 import FilmCardView from '../view/film-card.js';
 import PopupView from '../view/popup.js';
-// import CommentView from '../view/comment.js';
 import {render, RenderPosition, remove, replace} from '../utils/render.js';
 import {UserAction, UpdateType} from '../const.js';
 
@@ -25,7 +24,7 @@ export default class Card {
     this._handleWatchListClick = this._handleWatchListClick.bind(this);
     this._handleWatchedClick = this._handleWatchedClick.bind(this);
     this._handleFavoriteClick = this._handleFavoriteClick.bind(this);
-    //comment submit
+
     this._handleFormSubmit = this._handleFormSubmit.bind(this);
 
   }
@@ -52,7 +51,7 @@ export default class Card {
     this._popupComponent.setWatchListClickHandler(this._handleWatchListClick);
     this._popupComponent.setWatchedClickHandler(this._handleWatchedClick);
     this._popupComponent.setFavoriteClickHandler(this._handleFavoriteClick);
-    //comment submit
+
     this._popupComponent.setFormSubmitHandler(this._handleFormSubmit);
 
     if (prevFilmCardComponent === null) {
@@ -166,12 +165,10 @@ export default class Card {
     );
   }
 
-  //отправка комментариев
-  _handleFormSubmit(card, commentsArray) {
+  _handleFormSubmit(commentsArray) {
     this._changeData(
       UserAction.ADD_COMMENT,
       UpdateType.MINOR,
-      card,
       commentsArray,
     );
   }

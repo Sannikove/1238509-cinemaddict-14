@@ -30,12 +30,4 @@ export default class Cards extends Observer {
     this._notify(updateType, update);
   }
 
-  addComment(updateType, update) {
-    this._cards = [
-      update,
-      ...this._cards,
-    ];
-
-    this._notify(updateType, update);
-  }
 }

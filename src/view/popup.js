@@ -92,12 +92,10 @@ const createPopupTemplate = (data) => {
     description,
     comments,
     userFilmInteractions,
-    // emoji,
-    // comment,
     commentsList,
   } = data;
 
-  const {comment, emotion} = data.comment;
+  const {comment, emotion} = data.newComment;
 
   const release = dayjs(releaseDate).format('D MMMM YYYY');
 
@@ -216,11 +214,11 @@ export default class Popup extends SmartView {
 
     this._data = Popup.parseCardToData(card, commentsArray);
 
-
     this._closeBtnClickHandler = this._closeBtnClickHandler.bind(this);
     this._watchListClickHandler = this._watchListClickHandler.bind(this);
     this._watchedClickHandler = this._watchedClickHandler.bind(this);
     this._favoriteClickHandler = this._favorireClickHandler.bind(this);
+
     this._formToggleHandler = this._formToggleHandler.bind(this);
     this._commentInputHandler = this._commentInputHandler.bind(this);
     this._formSubmitHandler = this._formSubmitHandler.bind(this);
@@ -255,16 +253,16 @@ export default class Popup extends SmartView {
   _isCtrlEnterEvent(evt){
     if(evt.ctrlKey && evt.keyCode == 13) {
       this.getElement()
-      .querySelector('.film-details__inner').submit();
+        .querySelector('.film-details__inner').submit();
     }
   }
 
   _formToggleHandler(evt) {
     switch (evt.target.value) {
       case 'smile':
-        this.updateData({comment:
+        this.updateData({newComment:
           Object.assign({},
-            this._data.comment,
+            this._data.newComment,
             {
               emotion: 'smile',
             },
@@ -291,13 +289,9 @@ export default class Popup extends SmartView {
 
   _commentInputHandler(evt) {
     evt.preventDefault();
-    // this.updateData({
-    //   comment: evt.target.value,
-    // }, true);
-
-    this.updateData({comment:
+    this.updateData({newComment:
       Object.assign({},
-        this._data.comment,
+        this._data.newComment,
         {
           comment: evt.target.value,
         },
@@ -356,36 +350,29 @@ export default class Popup extends SmartView {
   }
 
   static parseCardToData(card, commentsArray) {
-    // return Object.assign({},
-    //   card, {
-    //     emoji: null,
-    //     comment: null,
-    //     commentsList: commentsArray,
-    //   },
-    // );
     return Object.assign({},
       card, {
-        comment: {
+        newComment: {
           comment: null,
           commentDate: new Date,
           emotion: null,
           id: nanoid(),
-          nickName: "You",
+          nickName: 'You',
         },
         commentsList: commentsArray,
-      })
+      });
   }
 
-  static parseDataToCard(data) {
+  static parseDataToComments(data) {
     data = Object.assign({}, data);
 
-    const commentsArray = data.commentsList.push(data.comment);
+    const commentsArray = data.commentsList.push(data.newComment);
 
-    // delete data.emoji;
-    delete data.comment;
+
+    delete data.newComment;
     delete data.commentsList;
 
-    return data, commentsArray;
+    return commentsArray;
 
   }
 

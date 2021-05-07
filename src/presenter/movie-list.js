@@ -11,8 +11,9 @@ import {UpdateType, UserAction} from '../const.js';
 const FILM_COUNT_PER_STEP = 5;
 
 export default class MovieList {
-  constructor(movieListContainer, cardsModel) {
+  constructor(movieListContainer, cardsModel, commentsModel) {
     this._cardsModel = cardsModel;
+    this._commentsModel = commentsModel;
     this._movieListContainer = movieListContainer;
     this._renderedCardCount = FILM_COUNT_PER_STEP;
     this._cardPresenter = {};
@@ -30,11 +31,11 @@ export default class MovieList {
     this._handleModeChange = this._handleModeChange.bind(this);
 
     this._cardsModel.addObserver(this._handleModelEvent);
+    this._commentsModel.addObserver(this._handleModelEvent);
+
   }
 
-  init(commentsArray) {
-    this._commentsArray = commentsArray.slice();
-
+  init() {
     render(this._movieListContainer, this._filmsContainerComponent, RenderPosition.BEFOREEND);
     render(this._filmsContainerComponent, this._filmsListComponent, RenderPosition.BEFOREEND);
     render(this._filmsListComponent, this._cardsContainerComponent, RenderPosition.BEFOREEND);
@@ -47,24 +48,26 @@ export default class MovieList {
     return this._cardsModel.getCards();
   }
 
+  _getComments() {
+    return this._commentsModel.getComments();
+  }
+
   _handleModeChange() {
     Object
       .values(this._cardPresenter)
       .forEach((presenter) => presenter.closeOtherPopup());
   }
 
-  _handleViewAction(actionType, updateType, update, newArray) {
-    console.log(actionType, updateType, update, newArray);
+  _handleViewAction(actionType, updateType, update) {
     switch (actionType) {
       case UserAction.UPDATE_CARD:
         this._cardsModel.updateCard(updateType, update);
         break;
       case UserAction.ADD_COMMENT:
-        this._cardsModel.addComment(updateType, update);
-        this._commentsArray = newArray;
+        this._commentsModel.addComment(updateType, update);
         break;
       case UserAction.DELETE_COMMENT:
-        this._cardsModel.deleteComment(updateType, update);
+        this._commentsModel.deleteComment(updateType, update);
         break;
     }
   }
@@ -72,17 +75,13 @@ export default class MovieList {
   _handleModelEvent(updateType, data) {
     switch (updateType) {
       case UpdateType.PATCH:
-        // - обновить часть списка (например, когда поменялось описание)
-        // обновить комментарии?
-        this._cardPresenter[data.id].init(data, this._commentsArray);
+        this._cardPresenter[data.id].init(data);
         break;
       case UpdateType.MINOR:
-        // - обновить список (например, когда задача ушла в архив)
         this._clearMovieList();
         this._renderMovieList();
         break;
       case UpdateType.MAJOR:
-        // - обновить всю доску (например, при переключении фильтра)
         this._clearMovieList({resetRenderedCardCount: true}); // когда будет сделана сортировка добавить параметр {resetSortType: true}
         this._renderMovieList();
         break;
@@ -93,14 +92,14 @@ export default class MovieList {
     render(this._movieListContainer, this._sortComponent, RenderPosition.AFTERBEGIN);
   }
 
-  _renderCard(card) {
+  _renderCard(card, comments) {
     const cardPresenter = new CardPresenter(this._cardsContainerComponent, this._handleViewAction, this._handleModeChange);
-    cardPresenter.init(card, this._commentsArray);
+    cardPresenter.init(card, comments);
     this._cardPresenter[card.id] = cardPresenter;
   }
 
-  _renderCards(cards) {
-    cards.forEach((card) => this._renderCard(card));
+  _renderCards(cards, comments) {
+    cards.forEach((card) => this._renderCard(card, comments));
   }
 
   _renderNoCards() {
@@ -111,8 +110,9 @@ export default class MovieList {
     const cardCount = this._getCards().length;
     const newRenderedCardCount = Math.min(cardCount, this._renderedCardCount + FILM_COUNT_PER_STEP);
     const cards = this._getCards().slice(this._renderedCardCount, newRenderedCardCount);
+    const comments = this._getComments().slice();
 
-    this._renderCards(cards);
+    this._renderCards(cards, comments);
     this._renderedCardCount = newRenderedCardCount;
 
     if (this._renderedCardCount >= cardCount) {

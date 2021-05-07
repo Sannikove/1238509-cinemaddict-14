@@ -23,7 +23,6 @@ export default class Smart extends Abstract {
 
     const scrollElement = this.getElement().scrollTop;
     this.updateElement(scrollElement);
-    console.log(this._data);
   }
 
   updateElement(scrollElement) {
