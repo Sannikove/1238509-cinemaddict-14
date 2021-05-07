@@ -92,14 +92,14 @@ export default class MovieList {
     render(this._movieListContainer, this._sortComponent, RenderPosition.AFTERBEGIN);
   }
 
-  _renderCard(card, comments) {
-    const cardPresenter = new CardPresenter(this._cardsContainerComponent, this._handleViewAction, this._handleModeChange);
-    cardPresenter.init(card, comments);
+  _renderCard(card) {
+    const cardPresenter = new CardPresenter(this._cardsContainerComponent, this._handleViewAction, this._handleModeChange, this._commentsModel);
+    cardPresenter.init(card);
     this._cardPresenter[card.id] = cardPresenter;
   }
 
-  _renderCards(cards, comments) {
-    cards.forEach((card) => this._renderCard(card, comments));
+  _renderCards(cards) {
+    cards.forEach((card) => this._renderCard(card));
   }
 
   _renderNoCards() {
@@ -110,9 +110,9 @@ export default class MovieList {
     const cardCount = this._getCards().length;
     const newRenderedCardCount = Math.min(cardCount, this._renderedCardCount + FILM_COUNT_PER_STEP);
     const cards = this._getCards().slice(this._renderedCardCount, newRenderedCardCount);
-    const comments = this._getComments().slice();
+    // const comments = this._getComments().slice();
 
-    this._renderCards(cards, comments);
+    this._renderCards(cards);
     this._renderedCardCount = newRenderedCardCount;
 
     if (this._renderedCardCount >= cardCount) {

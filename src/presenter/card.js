@@ -9,10 +9,11 @@ const Mode = {
 };
 
 export default class Card {
-  constructor(cardsContainer, changeData, changeMode) {
+  constructor(cardsContainer, changeData, changeMode, commentsArray) {
     this._cardsContainer = cardsContainer;
     this._changeData = changeData;
     this._changeMode = changeMode;
+    this._commentsArray = commentsArray.getComments();
 
     this._filmCardComponent = null;
     this._popupComponent = null;
@@ -29,17 +30,16 @@ export default class Card {
 
   }
 
-  init(card, commentsArray) {
+  init(card) {
     this._card = card;
-    this._commentsArray = commentsArray;
+    // this._commentsArray = commentsArray;
 
 
     const prevFilmCardComponent = this._filmCardComponent;
     const prevPopupComponent = this._popupComponent;
 
     this._filmCardComponent = new FilmCardView(card);
-    this._popupComponent = new PopupView(card, commentsArray);
-
+    this._popupComponent = new PopupView(card, this._commentsArray);
 
     this._filmCardComponent.setOpenPopupClickHandler(this._handleOpenPopupClick);
     this._popupComponent.setCloseBtnClickHandler(this._handleCloseBtnClick);
